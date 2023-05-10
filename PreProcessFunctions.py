@@ -163,12 +163,9 @@ class preProcess(object):
 
     #Data Selection Functions
     def readTrainCSV(self):
-        self.the_queue = queue.Queue()
         filename = filedialog.askopenfilename(initialdir= "F:\Downloads\Knowledge\Programming\Self-Projects\Python Projects\Windowed Neural Network\Data", title="Select Training Data", filetypes=(("Comma-Seperated Value (*.csv*)", ("*.csv*")),("Text Files (*.txt*)", "*.txt*"), ("All Files (*.*)", "*.*")))
         self.train = pd.read_csv(filename)
         self.train.drop(['num_outbound_cmds','dst_host_srv_rerror_rate','dst_host_rerror_rate','dst_host_srv_serror_rate','dst_host_serror_rate','dst_host_srv_diff_host_rate','dst_host_same_src_port_rate','dst_host_diff_srv_rate','dst_host_same_srv_rate','dst_host_srv_count','dst_host_count','srv_diff_host_rate','diff_srv_rate','same_srv_rate','srv_rerror_rate','rerror_rate','srv_serror_rate','num_shells','num_root','root_shell','num_compromised','hot','urgent','land','wrong_fragment','count','srv_count'], axis=1, inplace=True)
-        self.the_queue.put(item=self.train)
-        self.the_queue.put(None)
         #Change Label Contents
         print("File Opened: " +filename)
         #return train
@@ -187,7 +184,6 @@ class preProcess(object):
         filename1 = filedialog.askopenfilename(initialdir= "F:\Downloads\Knowledge\Programming\Self-Projects\Python Projects\Windowed Neural Network\Data", title="Select Testing Data", filetypes=(("Comma-Seperated Value (*.csv*)", ("*.csv*")),("Text Files (*.txt*)", "*.txt*"), ("All Files (*.*)", "*.*")))
         self.test = pd.read_csv(filename1)
         self.test.drop(['num_outbound_cmds','dst_host_srv_rerror_rate','dst_host_rerror_rate','dst_host_srv_serror_rate','dst_host_serror_rate','dst_host_srv_diff_host_rate','dst_host_same_src_port_rate','dst_host_diff_srv_rate','dst_host_same_srv_rate','dst_host_srv_count','dst_host_count','srv_diff_host_rate','diff_srv_rate','same_srv_rate','srv_rerror_rate','rerror_rate','srv_serror_rate','num_shells','num_root','root_shell','num_compromised','hot','urgent','land','wrong_fragment','count','srv_count'], axis=1, inplace=True)
-        queue.Queue.put(self.test)
         #Change Label Contents
         print("File Opened: " +filename1)
         #return test
@@ -297,12 +293,13 @@ class preProcess(object):
             )
         model.fit(self.X_train,
               self.Y_train,
-              epochs=10,
+              epochs=5,
               batch_size=10,
               verbose=2)
-        
+        return model
     
-        #This Section is for the grid search 
+        #This Section is for the grid search
+    def classifyModel(self):
         neural_network = KerasClassifier(build_fn=self.create_network,
                                          epochs=10,
                                          batch_size=10,
@@ -310,7 +307,6 @@ class preProcess(object):
                                          )
 
         print(cross_val_score(neural_network, self.X_train, self.Y_train, cv =3))
-        return model
     
     def gridSearch(self):
         batch_size = [10, 20, 40, 60, 80, 100]

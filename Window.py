@@ -252,44 +252,44 @@ class NetworkIntrusionDetectionApp(tk.Tk):
     #label_file_explorer1 = Label(top,text="No Testing Data Selected", width= 25)
 
         #Grid
-        Grid.rowconfigure(top,0,weight=1)
+        #Grid.rowconfigure(top,0,weight=1)
         Grid.columnconfigure(top,0,weight=1)
-        Grid.rowconfigure(top,1,weight=1)
+        #Grid.rowconfigure(top,1,weight=1)
 
         #Buttons
-        B1 = tk.Button(top, text="Select Training Data",command=p.thread1)
+        B1 = tk.Button(top, text="Select Training Data",command=p.readTrainCSV)
         B2 = tk.Button(top, text="Select Testing Data",command=p.readTestCSV)
         B3 = tk.Button(top, text="Pre-Process Data", command=p.Process)
         B4 = tk.Button(top, text="Initiate Neural Network", command=p.create_network)
         B5 = tk.Button(top, text="Start GridSearch", command=p.gridSearch)
+        B6 = tk.Button(top, text="Classify Model", command=p.classifyModel)
+        
         #Progress Bar Widget
         #progress = Progressbar(top, orient= HORIZONTAL, length= 100, mode= "determinate")
-
 
                 #import time
                 #progress['value'] = 0
                 #top.update_idletasks()
                 #time.sleep(1)
 
-
-
         #Place Widgets Within Window
         #label_file_explorer.grid(column=0, row=1, sticky=N)
-        B1.grid(column=0, row=2, sticky=N)
+        B1.grid(column=0, row=0, sticky=N, pady=20)
         #label_file_explorer1.grid(column=0, row=3, sticky=N)
-        B2.grid(column=0, row=4, sticky=N)
-        B3.grid(column=0, row=5, sticky=N, pady=20)
+        B2.grid(column=0, row=1, sticky=N)
+        B3.grid(column=0, row=2, sticky=N, pady=20)
         #progress.grid(column=1, row=6, sticky=N, pady=10)
         B4.grid(column=0, row=8, sticky=N)
         B5.grid(column=0, row=9, sticky=N)
-
+        B6.grid(column=0, row=10, sticky=N)
+        
         #Output
-        Label(top, text = "Output:").grid(column=0, row=6)
+        Label(top, text = "Output:").grid(column=0, row=3)
         t = tk.Text(top)
         pl = printLogger(t)
-        sys.stdout = pl
+        #sys.stdout = pl
         t.configure(state="disabled")
-        t.grid(column=0, row=7, sticky=N)
+        t.grid(column=0, row=4, sticky=N)
         
     def callback(self):
         if messagebox.askokcancel("Quit", "Do you really wish to quit?"):
