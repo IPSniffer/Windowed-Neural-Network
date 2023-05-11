@@ -306,7 +306,7 @@ class preProcess(object):
                                          #verbose=4
                                          )
 
-        print(cross_val_score(neural_network, self.X_train, self.Y_train, cv =3))
+        print("The Cross Validation Scores are: ", cross_val_score(neural_network, self.X_train, self.Y_train, cv =3))
     
     def gridSearch(self):
         batch_size = [10, 20, 40, 60, 80, 100]

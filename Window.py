@@ -212,13 +212,16 @@ class NetworkIntrusionDetectionApp(tk.Tk):
     
     def __init__(self):
         tk.Tk.__init__(self)
-        top = Tk()
-        top.geometry("800x800")
-        top.title("Neural Network")
-        top.protocol("WM_DELETE_WINDOW", self.callback)
-        self.withdraw()
+        #top = Tk()
+        #top.geometry("800x800")
+        #top.title("Neural Network")
+        #top.protocol("WM_DELETE_WINDOW", self.callback)
+        self.title("Neural Network")
+        self.geometry("800x800")
+        self.protocol("WM_DELETE_WINDOW", self.callback)
+        #self.withdraw()
         #Menubar
-        menubar = Menu(top)
+        menubar = Menu()
         filemenu = tk.Menu(menubar, tearoff=0)
         helpmenu = tk.Menu(menubar, tearoff=0)
         editmenu = tk.Menu(menubar, tearoff=0)
@@ -230,7 +233,7 @@ class NetworkIntrusionDetectionApp(tk.Tk):
         filemenu.add_command(label="Save as...", command=self.donothing)
         filemenu.add_command(label="Close", command=self.donothing)
         filemenu.add_separator()
-        filemenu.add_command(label="Exit", command=top.quit)
+        filemenu.add_command(label="Exit", command=self.callback)
 
         #Edit
         editmenu.add_command(label="Undo", command=self.donothing)
@@ -246,23 +249,29 @@ class NetworkIntrusionDetectionApp(tk.Tk):
         menubar.add_cascade(label="Help", menu=helpmenu)
         editmenu = Menu(menubar, tearoff=0)
         editmenu.add_command(label="Undo", command=self.donothing)
-        top.config(menu=menubar)
+        self.config(menu=menubar)
     #label_file_explorer = Label(top,text="No Training Data Selected", width= 25)
 
     #label_file_explorer1 = Label(top,text="No Testing Data Selected", width= 25)
 
         #Grid
-        #Grid.rowconfigure(top,0,weight=1)
-        Grid.columnconfigure(top,0,weight=1)
-        #Grid.rowconfigure(top,1,weight=1)
-
+        Grid.rowconfigure(self,0,weight=1)
+        Grid.rowconfigure(self,1,weight=1)
+        Grid.rowconfigure(self,4,weight=1)
+        
+        Grid.columnconfigure(self,0,weight=1)
+        Grid.columnconfigure(self,1,weight=1)
+        
+        
         #Buttons
-        B1 = tk.Button(top, text="Select Training Data",command=p.readTrainCSV)
-        B2 = tk.Button(top, text="Select Testing Data",command=p.readTestCSV)
-        B3 = tk.Button(top, text="Pre-Process Data", command=p.Process)
-        B4 = tk.Button(top, text="Initiate Neural Network", command=p.create_network)
-        B5 = tk.Button(top, text="Start GridSearch", command=p.gridSearch)
-        B6 = tk.Button(top, text="Classify Model", command=p.classifyModel)
+        B1 = tk.Button(self, text="Select Training Data",command=p.readTrainCSV)
+        B2 = tk.Button(self, text="Select Testing Data",command=p.readTestCSV)
+        B3 = tk.Button(self, text="Pre-Process Data", command=p.Process)
+        B4 = tk.Button(self, text="Initiate Neural Network", command=p.classifyModel)
+        B5 = tk.Button(self, text="Start GridSearch", command=p.gridSearch)
+        
+        #Int Value Widgets
+        epochs = tk.Entry(self)
         
         #Progress Bar Widget
         #progress = Progressbar(top, orient= HORIZONTAL, length= 100, mode= "determinate")
@@ -274,22 +283,25 @@ class NetworkIntrusionDetectionApp(tk.Tk):
 
         #Place Widgets Within Window
         #label_file_explorer.grid(column=0, row=1, sticky=N)
-        B1.grid(column=0, row=0, sticky=N, pady=20)
+        B1.grid(column=0, row=0, sticky=N)
         #label_file_explorer1.grid(column=0, row=3, sticky=N)
         B2.grid(column=0, row=1, sticky=N)
-        B3.grid(column=0, row=2, sticky=N, pady=20)
+        B3.grid(column=0, row=2, sticky=N)
         #progress.grid(column=1, row=6, sticky=N, pady=10)
-        B4.grid(column=0, row=8, sticky=N)
-        B5.grid(column=0, row=9, sticky=N)
-        B6.grid(column=0, row=10, sticky=N)
+        B4.grid(column=0, row=3, sticky=N, pady=20)
+        B5.grid(column=0, row=4, sticky=N)
+        
+        #Entry
+        epochs.grid(column=1, row=3, sticky=W)
+        epochs.insert(0,"10")
         
         #Output
-        Label(top, text = "Output:").grid(column=0, row=3)
-        t = tk.Text(top)
+        Label(self, text = "Output:").grid(column=0, row=5)
+        t = tk.Text(self)
         pl = printLogger(t)
         #sys.stdout = pl
         t.configure(state="disabled")
-        t.grid(column=0, row=4, sticky=N)
+        t.grid(column=0, row=6, sticky=N)
         
     def callback(self):
         if messagebox.askokcancel("Quit", "Do you really wish to quit?"):
@@ -297,7 +309,7 @@ class NetworkIntrusionDetectionApp(tk.Tk):
     
     #Functions for menubar
     def donothing(self):
-        filewin = Toplevel(self.top)
+        filewin = Toplevel(self)
         button = Button(filewin, text="Do nothing button")
         button.pack()
 
