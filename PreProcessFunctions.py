@@ -40,7 +40,7 @@ from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
 import plotly
 import plotly.express as px
 import plotly.graph_objects as go 
-from tkinter import messagebox, filedialog
+from tkinter import messagebox, filedialog, Toplevel, Entry, Button
 import queue
 from threading import *
 
@@ -299,14 +299,16 @@ class preProcess(object):
         return model
     
         #This Section is for the grid search
-    def classifyModel(self):
+    def classifyModel(self, epochs):
+        #number = int(self.epochs.get())
         neural_network = KerasClassifier(build_fn=self.create_network,
-                                         epochs=10,
+                                         epochs=epochs,
                                          batch_size=10,
                                          #verbose=4
                                          )
-
         print("The Cross Validation Scores are: ", cross_val_score(neural_network, self.X_train, self.Y_train, cv =3))
+
+    
     
     def gridSearch(self):
         batch_size = [10, 20, 40, 60, 80, 100]
@@ -316,7 +318,7 @@ class preProcess(object):
         scorers = {'precision_score': make_scorer(precision_score),
                    'recall_score': make_scorer(recall_score),
                    'accuracy_score': make_scorer(accuracy_score)}
-        grid = GridSearchCV(estimator=neural_network, param_grid=param_grid, n_jobs=-1, cv=3, scoring=scorers,refit="precision_score")
+        grid = GridSearchCV(estimator=self.create_network, param_grid=param_grid, n_jobs=-1, cv=3, scoring=scorers,refit="precision_score")
         grid_result = grid.fit(self.X_train, self.Y_train)
 
         #Preparing for model reports

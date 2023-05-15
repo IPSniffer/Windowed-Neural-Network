@@ -217,7 +217,7 @@ class NetworkIntrusionDetectionApp(tk.Tk):
         #top.title("Neural Network")
         #top.protocol("WM_DELETE_WINDOW", self.callback)
         self.title("Neural Network")
-        self.geometry("800x800")
+        self.geometry("600x600")
         self.protocol("WM_DELETE_WINDOW", self.callback)
         #self.withdraw()
         #Menubar
@@ -255,23 +255,23 @@ class NetworkIntrusionDetectionApp(tk.Tk):
     #label_file_explorer1 = Label(top,text="No Testing Data Selected", width= 25)
 
         #Grid
-        Grid.rowconfigure(self,0,weight=1)
-        Grid.rowconfigure(self,1,weight=1)
-        Grid.rowconfigure(self,4,weight=1)
+        #Grid.rowconfigure(self,0,weight=1)
+        #Grid.rowconfigure(self,1,weight=1)
+        #Grid.rowconfigure(self,4,weight=1)
         
         Grid.columnconfigure(self,0,weight=1)
         Grid.columnconfigure(self,1,weight=1)
         
         
         #Buttons
-        B1 = tk.Button(self, text="Select Training Data",command=p.readTrainCSV)
-        B2 = tk.Button(self, text="Select Testing Data",command=p.readTestCSV)
+        B1 = tk.Button(self, text="Select Training Data", command=p.readTrainCSV)
+        B2 = tk.Button(self, text="Select Testing Data", command=p.readTestCSV)
         B3 = tk.Button(self, text="Pre-Process Data", command=p.Process)
-        B4 = tk.Button(self, text="Initiate Neural Network", command=p.classifyModel)
+        B4 = tk.Button(self, text="Initiate Neural Network", command=self.Number)
         B5 = tk.Button(self, text="Start GridSearch", command=p.gridSearch)
         
         #Int Value Widgets
-        epochs = tk.Entry(self)
+        self.epochs = tk.Entry(self)
         
         #Progress Bar Widget
         #progress = Progressbar(top, orient= HORIZONTAL, length= 100, mode= "determinate")
@@ -285,15 +285,15 @@ class NetworkIntrusionDetectionApp(tk.Tk):
         #label_file_explorer.grid(column=0, row=1, sticky=N)
         B1.grid(column=0, row=0, sticky=N)
         #label_file_explorer1.grid(column=0, row=3, sticky=N)
-        B2.grid(column=0, row=1, sticky=N)
+        B2.grid(column=0, row=1, sticky=N, pady=20)
         B3.grid(column=0, row=2, sticky=N)
         #progress.grid(column=1, row=6, sticky=N, pady=10)
         B4.grid(column=0, row=3, sticky=N, pady=20)
         B5.grid(column=0, row=4, sticky=N)
         
         #Entry
-        epochs.grid(column=1, row=3, sticky=W)
-        epochs.insert(0,"10")
+        self.epochs.grid(column=1, row=3, sticky=W)
+        self.epochs.insert(0,"10")
         
         #Output
         Label(self, text = "Output:").grid(column=0, row=5)
@@ -301,7 +301,7 @@ class NetworkIntrusionDetectionApp(tk.Tk):
         pl = printLogger(t)
         #sys.stdout = pl
         t.configure(state="disabled")
-        t.grid(column=0, row=6, sticky=N)
+        t.grid(column=0, row=6)
         
     def callback(self):
         if messagebox.askokcancel("Quit", "Do you really wish to quit?"):
@@ -319,7 +319,11 @@ class NetworkIntrusionDetectionApp(tk.Tk):
     def Welcome(self):
         messagebox.showinfo("Welcome", "Welcome to the Network Traffic Machine Learning Program")
 
-
+    def Number(self):
+        #number = IntVar()
+        number = self.epochs.get()
+        p.classifyModel(epochs=(int(number)))
+        
     #File Browser
     #def browseFiles():
     #    global v
