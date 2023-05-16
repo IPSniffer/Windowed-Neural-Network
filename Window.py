@@ -217,7 +217,7 @@ class NetworkIntrusionDetectionApp(tk.Tk):
         #top.title("Neural Network")
         #top.protocol("WM_DELETE_WINDOW", self.callback)
         self.title("Neural Network")
-        self.geometry("600x600")
+        self.geometry("400x400")
         self.protocol("WM_DELETE_WINDOW", self.callback)
         #self.withdraw()
         #Menubar
@@ -263,16 +263,19 @@ class NetworkIntrusionDetectionApp(tk.Tk):
         Grid.columnconfigure(self,1,weight=1)
         
         
+        
+        
         #Buttons
         B1 = tk.Button(self, text="Select Training Data", command=p.readTrainCSV)
         B2 = tk.Button(self, text="Select Testing Data", command=p.readTestCSV)
-        B3 = tk.Button(self, text="Pre-Process Data", command=p.Process)
+        B3 = tk.Button(self, text="Pre-Process Data", command=self.saveSwitch)
         B4 = tk.Button(self, text="Initiate Neural Network", command=self.Number)
         B5 = tk.Button(self, text="Start GridSearch", command=p.gridSearch)
         
         #Int Value Widgets
         self.epochs = tk.Entry(self)
-        
+        self.Cbvalue = tk.IntVar(self)
+        Cb= Checkbutton(self, text="Save Data Locally?", variable=self.Cbvalue, onvalue=1, offvalue=0)
         #Progress Bar Widget
         #progress = Progressbar(top, orient= HORIZONTAL, length= 100, mode= "determinate")
 
@@ -290,18 +293,20 @@ class NetworkIntrusionDetectionApp(tk.Tk):
         #progress.grid(column=1, row=6, sticky=N, pady=10)
         B4.grid(column=0, row=3, sticky=N, pady=20)
         B5.grid(column=0, row=4, sticky=N)
+        Cb.grid(column=1, row=2, sticky=W)
+        
         
         #Entry
         self.epochs.grid(column=1, row=3, sticky=W)
-        self.epochs.insert(0,"10")
+        self.epochs.insert(0,"Insert Number of Epochs")
         
         #Output
-        Label(self, text = "Output:").grid(column=0, row=5)
+        #Label(self, text = "Output:").grid(column=0, row=5)
         t = tk.Text(self)
         pl = printLogger(t)
         #sys.stdout = pl
         t.configure(state="disabled")
-        t.grid(column=0, row=6)
+        #t.grid(column=0, row=6)
         
     def callback(self):
         if messagebox.askokcancel("Quit", "Do you really wish to quit?"):
@@ -323,7 +328,28 @@ class NetworkIntrusionDetectionApp(tk.Tk):
         #number = IntVar()
         number = self.epochs.get()
         p.classifyModel(epochs=(int(number)))
-        
+    
+    def saveSwitch(self):
+        if self.Cbvalue.get() == 1:
+            p.processDialog()
+        else:
+            p.Process()
+    #Drop Columns from the Training Data Commented out for now
+    #def trainColumn(self):
+    #    ctop = Toplevel()
+    #    ctop.title("Enter Column names to be Dropped")
+    #    ctop.geometry("200x200")
+    #    Label(ctop, text="Enter Training Columns to be Dropped (Remeber to use Commas)").grid(column=0, row=0)
+    #    self.traincolumn = tk.Entry(ctop)
+    #    self.traincolumn.grid(column=0, row=1, sticky=W)
+    #    self.traincolumn.insert(0,"Enter Columns Here")
+    #    B1 = tk.Button(ctop, text="Open Training Data CSV File", command=self.dropColumn)
+    #    B1.grid(column=0, row=2, sticky=W)
+    #    
+    #def dropColumn(self):
+    #    columns = self.traincolumn.get()
+    #    p.readTrainCSV(columns=columns)
+
     #File Browser
     #def browseFiles():
     #    global v

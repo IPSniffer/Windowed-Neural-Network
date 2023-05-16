@@ -170,6 +170,16 @@ class preProcess(object):
         print("File Opened: " +filename)
         #return train
 
+    #Drop Testing Data Columns Edited out until better use case is made for it
+    #def readTrainCSV(self, columns):
+    #    filename = filedialog.askopenfilename(initialdir= "F:\Downloads\Knowledge\Programming\Self-Projects\Python Projects\Windowed Neural Network\Data", title="Select Training Data", filetypes=(("Comma-Seperated Value (*.csv*)", ("*.csv*")),("Text Files (*.txt*)", "*.txt*"), ("All Files (*.*)", "*.*")))
+    #    self.train = pd.read_csv(filename)
+    #    self.train.drop([columns], axis=1, inplace=True)
+    #    #Change Label Contents
+    #    print("File Opened: " +filename)
+    #    #return train
+
+
     def thread1(self):
         t2 = Thread(target=self.readTrainCSV)
         t2.start()
@@ -187,6 +197,16 @@ class preProcess(object):
         #Change Label Contents
         print("File Opened: " +filename1)
         #return test
+
+    #Drop Testing Data Columns Edited out until better use case is made for it
+    #def readTestCSV(self, columns):
+    #    filename1 = filedialog.askopenfilename(initialdir= "F:\Downloads\Knowledge\Programming\Self-Projects\Python Projects\Windowed Neural Network\Data", title="Select Testing Data", filetypes=(("Comma-Seperated Value (*.csv*)", ("*.csv*")),("Text Files (*.txt*)", "*.txt*"), ("All Files (*.*)", "*.*")))
+    #    self.test = pd.read_csv(filename1)
+    #    self.test.drop([columns], axis=1, inplace=True)
+    #    #Change Label Contents
+    #    print("File Opened: " +filename1)
+    #    #return test
+
 
     #Pre-Processor
     def Process(self):
@@ -279,9 +299,101 @@ class preProcess(object):
         print("Data Pre-Processed")
         #return X_train, X_test, Y_train, Y_test
         
+    #Pre-Processor with save data dialog
+    def processDialog(self):
+        from sklearn.preprocessing import StandardScaler
+        scaler = StandardScaler()
+
+
+    # extract numerical attributes and scale it to have zero mean and unit variance  
+        cols = self.train.select_dtypes(include=['float64','int64']).columns
+        sc_train = scaler.fit_transform(self.train.select_dtypes(include=['float64','int64']))
+        sc_test = scaler.fit_transform(self.test.select_dtypes(include=['float64','int64']))
+
+    # turn the result back to a dataframe
+        sc_traindf = pd.DataFrame(sc_train, columns = cols)
+        sc_testdf = pd.DataFrame(sc_test, columns = cols)
+
+        from sklearn.preprocessing import LabelEncoder
+        encoder = LabelEncoder()
+
+        
+        # extract categorical attributes from both training and test sets 
+        cattrain = self.train.select_dtypes(include=['object']).copy()
+        cattest = self.test.select_dtypes(include=['object']).copy()
+
+        # encode the categorical attributes
+        traincat = cattrain.apply(encoder.fit_transform)
+        testcat = cattest.apply(encoder.fit_transform)
+
+        # separate target column from encoded data 
+        enctrain = traincat.drop(['class'], axis=1)
+        cat_Ytrain = traincat[['class']].copy()
+        
+        train_x = pd.concat([sc_traindf,enctrain],axis=1)
+        train_y = self.train['class'].replace({'anomaly' : 1, 'normal': 0})
+        #print(train_x.shape)
+        
+        test_df = pd.concat([sc_testdf,testcat],axis=1)
+        #print(test_df.shape)
+        
+        
+        from sklearn .ensemble import RandomForestClassifier
+        rfc = RandomForestClassifier();
+
+        # fit random forest classifier on the training set
+        rfc.fit(train_x, train_y);
+        # extract important features
+        score = np.round(rfc.feature_importances_,3)
+        importances = pd.DataFrame({'feature':train_x.columns,'importance':score})
+        importances = importances.sort_values('importance',ascending=False).set_index('feature')
+        # plot importances
+        plt.rcParams['figure.figsize'] = (11, 4)
+        importances.plot.bar();
+
+
+        from sklearn.feature_selection import RFE
+        import itertools
+        rfc = RandomForestClassifier()
+
+        # create the RFE model and select 10 attributes
+        rfe = RFE(rfc, n_features_to_select=15)
+        rfe = rfe.fit(train_x, train_y)
+
+        # summarize the selection of the attributes
+        feature_map = [(i, v) for i, v in itertools.zip_longest(rfe.get_support(), train_x.columns)]
+        selected_features = [v for i, v in feature_map if i==True]
+        
+
+        
+        from sklearn.model_selection import train_test_split
+        self.X_train,self.X_test,self.Y_train,self.Y_test = train_test_split(train_x,train_y,train_size=0.70, random_state=2)
+        
+        
+        file = filedialog.asksaveasfilename(initialdir= "F:\Downloads\Knowledge\Programming\Self-Projects\Python Projects\Windowed Neural Network\Data", title="Save X Training Data", filetypes=(("Comma-Seperated Value (*.csv*)", (".csv")),("Text Files (*.txt*)", ".txt"), ("All Files (*.*)", "*.*")), defaultextension="*.*")
+        file1 = filedialog.asksaveasfilename(initialdir= "F:\Downloads\Knowledge\Programming\Self-Projects\Python Projects\Windowed Neural Network\Data", title="Save X Testing Data", filetypes=(("Comma-Seperated Value (*.csv*)", (".csv")),("Text Files (*.txt*)", ".txt"), ("All Files (*.*)", "*.*")), defaultextension="*.*")
+        file2 = filedialog.asksaveasfilename(initialdir= "F:\Downloads\Knowledge\Programming\Self-Projects\Python Projects\Windowed Neural Network\Data", title="Save Y Training Data", filetypes=(("Comma-Seperated Value (*.csv*)", (".csv")),("Text Files (*.txt*)", ".txt"), ("All Files (*.*)", "*.*")), defaultextension="*.*")
+        file3 = filedialog.asksaveasfilename(initialdir= "F:\Downloads\Knowledge\Programming\Self-Projects\Python Projects\Windowed Neural Network\Data", title="Save Y Testing Data", filetypes=(("Comma-Seperated Value (*.csv*)", (".csv")),("Text Files (*.txt*)", ".txt"), ("All Files (*.*)", "*.*")), defaultextension="*.*")
+    
+    
+        self.X_train.to_csv(file, index = False)
+        self.X_test.to_csv(file1, index = False)
+        self.Y_train.to_csv(file2, index = False)
+        self.Y_test.to_csv(file3, index = False)
+        #messagebox.showinfo("Data Shapes","Shape of Test Data is: "+ str(train_x.shape)+ " Shape of Train Data is: "+ str(train_y.shape))
+        #X_train = self.X_train.to_csv()
+        #X_test = self.X_test.to_csv()
+        #Y_train = self.Y_train.to_csv()
+        #Y_test = self.Y_test.to_csv()
+        
+        print("Data Pre-Processed")
+        #return X_train, X_test, Y_train, Y_test
+    
+    
+    
     
     #The creation of the FFNN model
-    def create_network(self):
+    def create_network(self, epochs):
         model = Sequential(name="Model")
         model.add(Dense(units=14, input_dim=14, activation='softplus'))
         model.add(Dense(units=14, activation='relu'))
@@ -293,7 +405,7 @@ class preProcess(object):
             )
         model.fit(self.X_train,
               self.Y_train,
-              epochs=5,
+              epochs=epochs,
               batch_size=10,
               verbose=2)
         return model
