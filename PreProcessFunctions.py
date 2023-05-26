@@ -48,6 +48,9 @@ from threading import *
 import warnings
 warnings.filterwarnings('ignore')
 
+#Sets the random number to 0
+np.random.seed(0)
+
 #PreProcessing    
 class preProcess():
     
@@ -167,7 +170,7 @@ class preProcess():
         from sklearn.model_selection import train_test_split
         self.X_train,self.X_test,self.Y_train,self.Y_test = train_test_split(train_x,train_y,train_size=0.70, random_state=2)
 
-        print("Data Pre-Processed")
+        messagebox.showinfo("Alert", "Data Pre-Processed")
 
         
     #Pre-Processor with save data dialog

@@ -11,6 +11,7 @@ import cProfile
 import pstats
 from threading import *
 from idlelib.tooltip import Hovertip
+import logging
 
 #import tensorflow as tf
 #print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
@@ -56,32 +57,6 @@ class printLogger():
     
     
 p = preProcess()
-
-def windowThread():
-    t1 = Thread(target=NetworkIntrusionDetectionApp)
-    t1.start()
-    #t1.join(30)
-    #if t1.is_alive():
-    #    print("Test Thread is still active")
-    #else:
-    #    print("Test Thread has stopped")
-    #t1.join
-    
-def thread1():
-    t2 = Thread(target=p.readTrainCSV)
-    t2.start()
-    #t2.join(30)
-    if t2.is_alive():
-        print("Test Thread is still active")
-    else:
-        print("Test Thread has stopped")
-    t2.join
-
-def thread2():
-    t3 = Thread(target=p.readTestCSV)
-    t3.start()
-
-the_queue = queue
 
 class NetworkIntrusionDetectionApp(tk.Tk):
     
@@ -139,8 +114,8 @@ class NetworkIntrusionDetectionApp(tk.Tk):
         B1 = tk.Button(self, text="Select Training Data", command=p.readTrainCSV)
         B2 = tk.Button(self, text="Select Testing Data", command=p.readTestCSV)
         B3 = tk.Button(self, text="Pre-Process Data", command=self.saveSwitch)
-        B4 = tk.Button(self, text="Initiate Neural Network", command=self.Number)
-        B5 = tk.Button(self, text="Start GridSearch", command=p.gridSearch)
+        B4 = tk.Button(self, text="Initiate Neural Network", command=self.thread1)
+        B5 = tk.Button(self, text="Start GridSearch", command=self.thread2)
         
         #Int Value Widgets
         self.epochs = tk.Entry(self)
@@ -167,7 +142,8 @@ class NetworkIntrusionDetectionApp(tk.Tk):
         Hovertip(B1,'Click to open a dialog box to select Training Data')
         Hovertip(B2,'Click to open a dialog box to select Testing Data')
         Hovertip(B3,'Click to Pre-Process Data Selected')
-        
+        Hovertip(B4,'Click to Train the Neural Network (Recommend GridSearch First)')
+        Hovertip(B5,'Click to GridSearch to find Optimal Epochs and BatchSize')
         
         #Redirected Output
         #Label(self, text = "Output:").grid(column=0, row=5)
@@ -206,7 +182,24 @@ class NetworkIntrusionDetectionApp(tk.Tk):
             p.processDialog()
         else:
             p.Process()
+    
+    def thread1(self):
+        t1 = Thread(target=self.Number)
+        t1.start()
+        #t1.join(30)
+        #if t1.is_alive():
+        #    print("Test Thread is still active")
+        #else:
+        #    print("Test Thread has stopped")
+        #t1.join        
             
+    def thread2(self):
+        t2 = Thread(target=p.gridSearch)
+        t2.start()
+            
+    #targets = logging.StreamHandler(sys.stdout), logging.FileHandler('Log.txt')
+    #logging.basicConfig(format='%(message)s', level=logging.INFO, handlers=targets)
+    
     #Drop Columns from the Training Data Commented out for now
     #def trainColumn(self):
     #    ctop = Toplevel()
