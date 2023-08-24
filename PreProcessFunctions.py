@@ -33,9 +33,6 @@ from sklearn import tree
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
 
-#Import Pre-Processed Data
-#from PreProcessFunctions import preProcess
-
 #Visualization
 import plotly
 import plotly.express as px
@@ -72,17 +69,6 @@ class preProcess():
     #    #Change Label Contents
     #    print("File Opened: " +filename)
     #    #return train
-
-
-    def thread1(self):
-        t2 = Thread(target=self.readTrainCSV)
-        t2.start()
-        #t2.join(30)
-        if t2.is_alive():
-            print("Test Thread is still active")
-        else:
-            print("Test Thread has stopped")
-        t2.join    
 
     def readTestCSV(self):
         filename1 = filedialog.askopenfilename(initialdir= "F:\Downloads\Knowledge\Programming\Self-Projects\Python Projects\Windowed Neural Network\Data", title="Select Testing Data", filetypes=(("Comma-Seperated Value (*.csv*)", ("*.csv*")),("Text Files (*.txt*)", "*.txt*"), ("All Files (*.*)", "*.*")))
@@ -282,7 +268,6 @@ class preProcess():
         y_pred = model.predict(self.X_test)
         y_pred = (y_pred > 0.5)
         y_pred = y_pred.astype(int)
-        cm = confusion_matrix(self.Y_test, y_pred)
         
         return model
     
@@ -293,6 +278,8 @@ class preProcess():
                                          batch_size=batch_size,
                                          #verbose=4
                                          )
+        
+        #messagebox.showinfo("Model Results", "The Cross Validation Scores are: " + cross_val_score(self.neural_network, self.X_train, self.Y_train, cv =3)+ "Confusion Matrix: ", confusion_matrix(self.Y_test, y_pred))
         print("The Cross Validation Scores are: ", cross_val_score(self.neural_network, self.X_train, self.Y_train, cv =3))
         print()
         print('============================== Neural Network Confusion Matrix ==============================')
@@ -307,14 +294,7 @@ class preProcess():
         print()
         print('============================== Neural Network Classification Report ==============================')
         print(classification_report(self.Y_test, y_pred))
-        print()
-    
-    #def report(self):    
-        #Preparing for model reports
-        
-
-        
-        
+        print()  
     
     #This Section is for the grid search
     def gridSearch(self):
@@ -334,9 +314,9 @@ class preProcess():
         grid = GridSearchCV(estimator=self.neural_network, param_grid=param_grid, n_jobs=-1, cv=3, scoring=scorers,refit="precision_score")
         grid_result = grid.fit(self.X_train, self.Y_train)
 
-    
+        messagebox.showinfo("Neural Network GridSearch", "Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
         #Remove "#" when grid search is needed
         print()
         print('============================== Neural Network GridSearch ==============================')
-        print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+        print("Neural Network GridSearch", "Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
         print()
