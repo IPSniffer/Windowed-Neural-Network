@@ -14,7 +14,7 @@ from sklearn import neural_network
 from keras.models import Sequential
 from keras import Input
 from keras.layers import Dense
-from keras.wrappers.scikit_learn import KerasClassifier
+from scikeras.wrappers import KerasClassifier
 from sklearn.model_selection import cross_val_score
 
 #Data Manipulation
